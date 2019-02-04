@@ -1,6 +1,6 @@
 {% set name = "PyCifRW" %}
-{% set version = "4.3" %}
-{% set sha256 = "3b19e80278b40ebe00ad49a7dd8813007fbdc7a9a43fd3377e404ac0bcbcd3c3" %}
+{% set version = "4.4" %}
+{% set sha256 = "f365ed97991738a99722e08afe772fe197bf7f40dfc0a210d524e7742ad81ff8" %}
 
 package:
   name: {{ name|lower }}
@@ -12,11 +12,13 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   script: python setup.py install --single-version-externally-managed --record record.txt
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
     - setuptools
   run:
@@ -24,7 +26,6 @@ requirements:
 
 test:
   imports:
-    - CifFile.CifFile
     - CifFile.StarFile
     - CifFile.StarScan
 
