@@ -19,7 +19,7 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python
+    - python {{ python }}
     - setuptools
   run:
     - python
