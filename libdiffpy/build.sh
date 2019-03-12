@@ -1,26 +1,12 @@
 #!/bin/bash
 
-export CPATH="${PREFIX}/include:${CPATH}"
-export LIBRARY_PATH="${PREFIX}/lib:${LIBRARY_PATH}"
-
-if [[ `uname` == Linux ]]; then
-    export LD_LIBRARY_PATH="${PREFIX}/lib"
-fi
-
-if [[ `uname` == Darwin ]]; then
-    export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
-fi
-
 MYNCPU=$(( (CPU_COUNT > 8) ? 8 : CPU_COUNT ))
 
-# Build the library and unit test program.
-scons -j $MYNCPU lib alltests
+# drop linker flags that spuriously remove linkage with libgslcblas
+LDFLAGS="${LDFLAGS/-Wl,-dead_strip_dylibs/}"
 
-# Execute unit tests.
-scons test
+# Apply sconscript.local customizations.
+cp ${RECIPE_DIR}/sconscript.local ./
 
-# Install the library.
-scons install prefix=$PREFIX
-
-grep '^#define DIFFPY_VERSION_STR' < "${PREFIX}/include/diffpy/version.hpp" |
-    cut -d '"' -f 2 > __conda_version__.txt
+# Build and install the library.
+scons -j $MYNCPU lib install prefix=$PREFIX
