@@ -1,13 +1,15 @@
-{% set setupdata = load_setup_py_data(from_recipe_dir=True) %}
+{% set name = "libdiffpy" %}
+{% set version = "1.4.0" %}
+{% set sha256 = "0b08e161e8f2ed517ace9223c0315258c492c626d84dd06ff23ad9293c16e161" %}
 
 package:
-  name: libdiffpy
-  version: {{ setupdata['version'] }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  git_url: https://github.com/diffpy/libdiffpy.git
-  # refs/tags/v1.4.0
-  git_rev: 3c7693f9eca1c6b81bf1fd7a9a8e1f9ef3a1f05d
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://github.com/diffpy/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
