@@ -6,8 +6,11 @@ build:
   number: 0
 
 requirements:
-  run:
+  host:
+    # we need per-python packages, because srfit-sasview is only for py27
+    - python {{ python }}
 
+  run:
     # Python 2
     - srfit-sasview 3.1.2       # [py2k]
 
@@ -21,6 +24,7 @@ requirements:
     - libdiffpy 1.4.0
     - diffpy.srreal 1.3.0
 
+    - python
     - ipython
     - jupyter
     - scipy
