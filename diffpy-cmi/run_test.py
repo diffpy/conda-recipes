@@ -4,10 +4,8 @@ import sys
 import unittest
 import importlib
 
-PY3K = sys.version_info[0] >= 3
-
 testmodulenames = [
-    ('diffpy.structure.tests' if PY3K else 'diffpy.Structure.tests'),
+    'diffpy.structure.tests',
     'diffpy.utils.tests',
     'diffpy.srreal.tests',
     'pyobjcryst.tests',
