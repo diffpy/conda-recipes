@@ -1,6 +1,6 @@
 {% set name = "PyCifRW" %}
-{% set version = "4.4" %}
-{% set sha256 = "f365ed97991738a99722e08afe772fe197bf7f40dfc0a210d524e7742ad81ff8" %}
+{% set version = "4.4.1" %}
+{% set sha256 = "cef7662f475e0eb78a55c2d55774d474e888c96b0539e5f08550afa902cdc4e1" %}
 
 package:
   name: {{ name|lower }}
