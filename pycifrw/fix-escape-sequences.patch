@@ -1,0 +1,160 @@
+diff --git a/TestPyCIFRW.py b/TestPyCIFRW.py
+index 91293c5..c94c57d 100644
+--- a/TestPyCIFRW.py
++++ b/TestPyCIFRW.py
+@@ -91,7 +91,7 @@ class BasicUtilitiesTestCase(unittest.TestCase):
+         """Make sure that a single final backslash is removed when unfolding"""
+         test_string = "\n1234567890\\\n r t s 345 19\n\nlife don't talk to me about life"
+         folded_string = CifFile.apply_line_folding(test_string,5,10)
+-        folded_string = folded_string + "\ "
++        folded_string = folded_string + r"\ "
+         old_string = CifFile.remove_line_folding(folded_string)
+         self.failUnless(old_string == test_string)
+ 
+@@ -330,14 +330,14 @@ class SyntaxErrorTestCase(unittest.TestCase):
+             pass
+ 
+     def testTripleApostropheCase(self):
+-        teststrg = "#\#CIF_2.0\ndata_testblock\n _item_1 ''' ''' '''\n"
++        teststrg = "#\\#CIF_2.0\ndata_testblock\n _item_1 ''' ''' '''\n"
+         f = open("tests/syntax_check.cif","w")
+         f.write(teststrg)
+         f.close()
+         self.assertRaises(CifFile.StarError, CifFile.ReadCif,"tests/syntax_check.cif",grammar="2.0")
+ 
+     def testTripleQuoteCase(self):
+-        teststrg = '#\#CIF_2.0\ndata_testblock\n _item_1 """ """ """\n'
++        teststrg = '#\\#CIF_2.0\ndata_testblock\n _item_1 """ """ """\n'
+         f = open("tests/syntax_check.cif","w")
+         f.write(teststrg)
+         f.close()
+@@ -792,7 +792,7 @@ _atom_type.number_in_cell
+ 
+    def testEmptyDict(self):
+        """Test that a dictionary is processed correctly"""
+-       outstr = b"""#\#CIF_2.0\ndata_block1 _a_dict {"a":2}\n"""
++       outstr = b"""#\\#CIF_2.0\ndata_block1 _a_dict {"a":2}\n"""
+        b = open("tests/test4_dict.cif","wb")
+        b.write(outstr)
+        b.close()
+@@ -853,7 +853,7 @@ class SimpleWriteTestCase(unittest.TestCase):
+ class TemplateTestCase(unittest.TestCase):
+    def setUp(self):
+        """Create a template"""
+-       template_string = """#\#CIF_2.0
++       template_string = r"""#\#CIF_2.0
+ # Template
+ #
+ data_TEST_DIC
+@@ -974,7 +974,7 @@ class GrammarTestCase(unittest.TestCase):
+        f = open("tests/test_1.0","w")
+        f.write(teststr1_0)
+        f.close()
+-       teststr2_0 = """#\#CIF_2.0
++       teststr2_0 = r"""#\#CIF_2.0
+        data_Test
+          _item_1 ['a' 'b' 'c' 'd']
+          _item_2 'ordinary string'
+@@ -1608,7 +1608,7 @@ class DDL1TestCase(unittest.TestCase):
+ class DDLmDicTestCase(unittest.TestCase):
+     """Test validation of DDLm dictionaries"""
+     def setUp(self):
+-        testdic_string = """#\#CIF_2.0
++        testdic_string = r"""#\#CIF_2.0
+ #\#CIF_2.0
+ ##############################################################################
+ #                                                                            #
+@@ -2010,7 +2010,7 @@ class BlockOutputOrderTestCase(unittest.TestCase):
+             pass
+ 
+     def testOutputOrder(self):
+-        outstrg = """#\#CIF_2.0
++        outstrg = r"""#\#CIF_2.0
+ data_testa
+ _item1 1
+ data_testb
+diff --git a/src/CifFile_module.py b/src/CifFile_module.py
+index 3dd6fda..38b314d 100644
+--- a/src/CifFile_module.py
++++ b/src/CifFile_module.py
+@@ -437,7 +437,7 @@ class CifDic(StarFile.StarFile):
+         base_types = ["char","numb","null"]
+         prim_types = base_types[:]
+         base_constructs = [".*",
+-            '(-?(([0-9]*[.][0-9]+)|([0-9]+)[.]?)([(][0-9]+[)])?([eEdD][+-]?[0-9]+)?)|\?|\.',
++            '(-?(([0-9]*[.][0-9]+)|([0-9]+)[.]?)([(][0-9]+[)])?([eEdD][+-]?[0-9]+)?)|\\?|\\.',
+             "\"\" "]
+         for key,value in self.items():
+            newnames = [key]  #keep by default
+@@ -1347,7 +1347,7 @@ class CifDic(StarFile.StarFile):
+         return onepack
+ 
+     def get_number_with_esd(numstring):
+-        numb_re = '((-?(([0-9]*[.]([0-9]+))|([0-9]+)[.]?))([(][0-9]+[)])?([eEdD][+-]?[0-9]+)?)|(\?)|(\.)'
++        numb_re = '((-?(([0-9]*[.]([0-9]+))|([0-9]+)[.]?))([(][0-9]+[)])?([eEdD][+-]?[0-9]+)?)|(\\?)|(\\.)'
+         our_match = re.match(numb_re,numstring)
+         if our_match:
+             a,base_num,b,c,dad,dbd,esd,exp,q,dot = our_match.groups()
+@@ -2875,7 +2875,7 @@ def run_data_checks(check_block,fulldic,block_scope='Item'):
+ 
+ 
+ def get_number_with_esd(numstring):
+-    numb_re = '((-?(([0-9]*[.]([0-9]+))|([0-9]+)[.]?))([(][0-9]+[)])?([eEdD][+-]?[0-9]+)?)|(\?)|(\.)'
++    numb_re = '((-?(([0-9]*[.]([0-9]+))|([0-9]+)[.]?))([(][0-9]+[)])?([eEdD][+-]?[0-9]+)?)|(\\?)|(\\.)'
+     our_match = re.match(numb_re,numstring)
+     if our_match:
+         a,base_num,b,c,dad,dbd,esd,exp,q,dot = our_match.groups()
+diff --git a/src/StarFile.py b/src/StarFile.py
+index 117dc15..0bbb52b 100644
+--- a/src/StarFile.py
++++ b/src/StarFile.py
+@@ -395,12 +395,12 @@ class StarBlock(object):
+         """Set the characterset for checking datanames: may be `ascii` or `unicode`"""
+         self.characterset = characterset
+         if characterset == 'ascii':
+-            self.char_check = re.compile("[][ \n\r\t!%&\(\)*+,./:<=>?@0-9A-Za-z\\\\^`{}\|~\"#$';_-]+",re.M)
++            self.char_check = re.compile("[][ \n\r\t!%&\\(\\)*+,./:<=>?@0-9A-Za-z\\\\^`{}\\|~\"#$';_-]+",re.M)
+         elif characterset == 'unicode':
+             if sys.maxunicode < 1114111:
+-               self.char_check = re.compile(u"[][ \n\r\t!%&\(\)*+,./:<=>?@0-9A-Za-z\\\\^`{}\|~\"#$';_\u00A0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD-]+",re.M)
++               self.char_check = re.compile(u"[][ \n\r\t!%&\\(\\)*+,./:<=>?@0-9A-Za-z\\\\^`{}\\|~\"#$';_\u00A0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD-]+",re.M)
+             else:
+-               self.char_check = re.compile(u"[][ \n\r\t!%&\(\)*+,./:<=>?@0-9A-Za-z\\\\^`{}\|~\"#$';_\u00A0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD\U00010000-\U0010FFFD-]+",re.M)
++               self.char_check = re.compile(u"[][ \n\r\t!%&\\(\\)*+,./:<=>?@0-9A-Za-z\\\\^`{}\\|~\"#$';_\u00A0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD\U00010000-\U0010FFFD-]+",re.M)
+ 
+     def __str__(self):
+         return self.printsection()
+@@ -2219,7 +2219,7 @@ def ReadStar(filename,prepared = None, maxlength=-1,
+             pos = split.index(toolong[0])
+             raise StarError( 'Line %d contains more than %d characters' % (pos+1,maxlength))
+     # honour the header string
+-    if text[:10] != "#\#CIF_2.0" and ('2.0',Y20) in try_list:
++    if text[:10] != r"#\#CIF_2.0" and ('2.0',Y20) in try_list:
+         try_list.remove(('2.0',Y20),)
+         if not try_list:
+             raise StarError('File %s missing CIF2.0 header' % (filename))
+@@ -2412,7 +2412,7 @@ def process_template(template_file):
+         if not isinstance(item,int):    #not nested
+             hint_dict = {"dataname":item}
+             # find the line in the file
+-            start_pos = re.search("(^[ \t]*(?P<name>" + item + ")[ \t\n]+)(?P<spec>([\S]+)|(^;))",template_string,re.I|re.M)
++            start_pos = re.search("(^[ \t]*(?P<name>" + item + ")[ \t\n]+)(?P<spec>([\\S]+)|(^;))",template_string,re.I|re.M)
+             if start_pos.group("spec") != None:
+                 spec_pos = start_pos.start("spec")-start_pos.start(0)
+                 spec_char = template_string[start_pos.start("spec"):start_pos.start("spec")+3]
+@@ -2441,13 +2441,13 @@ def process_template(template_file):
+             total_items = len(template_as_cif.loops[item])
+             testname = testnames[0]
+             #find the loop spec line in the file
+-            loop_regex = "(^[ \t]*(?P<loop>loop_)[ \t\n\r]+(?P<name>" + testname + ")([ \t\n\r]+_[\S]+){%d}[ \t]*$(?P<packet>(.(?!_loop|_[\S]+))*))" % (total_items - 1)
++            loop_regex = "(^[ \t]*(?P<loop>loop_)[ \t\n\r]+(?P<name>" + testname + ")([ \t\n\r]+_[\\S]+){%d}[ \t]*$(?P<packet>(.(?!_loop|_[\\S]+))*))" % (total_items - 1)
+             loop_line = re.search(loop_regex,template_string,re.I|re.M|re.S)
+             loop_so_far = loop_line.end()
+             packet_text = loop_line.group('packet')
+             loop_indent = loop_line.start('loop') - loop_line.start(0)
+             form_hints.append({"dataname":'loop','name_pos':loop_indent})
+-            packet_regex = "[ \t]*(?P<all>(?P<sqqq>'''([^\n\r\f']*)''')|(?P<sq>'([^\n\r\f']*)'+)|(?P<dq>\"([^\n\r\"]*)\"+)|(?P<none>[^\s]+))"
++            packet_regex = "[ \t]*(?P<all>(?P<sqqq>'''([^\n\r\f']*)''')|(?P<sq>'([^\n\r\f']*)'+)|(?P<dq>\"([^\n\r\"]*)\"+)|(?P<none>[^\\s]+))"
+             packet_pos = re.finditer(packet_regex,packet_text)
+             line_end_pos = re.finditer("^",packet_text,re.M)
+             next_end = next(line_end_pos).end()
