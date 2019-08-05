@@ -1,6 +1,6 @@
 package:
   name: diffpy-cmi
-  version: 3.0.0
+  version: 3.0.1
 
 build:
   number: 0
@@ -15,10 +15,10 @@ requirements:
     - srfit-sasview 3.1.2       # [py2k]
 
     # Python 3 and 2
-    - diffpy.structure 3.0.0
+    - diffpy.structure 3.0.1
     - diffpy.utils 3.0.0
     - diffpy.srfit 3.0.0
-    - libobjcryst 2017.2.1
+    - libobjcryst 2017.2.2
     - pyobjcryst 2.1.0
     - periodictable 1.5.0
     - libdiffpy 1.4.0
