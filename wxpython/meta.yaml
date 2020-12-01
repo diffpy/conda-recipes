@@ -8,7 +8,9 @@ source:
     sha1: 5053f3fa04f4eb3a9d4bfd762d963deb7fa46866
 
 build:
-    number: 3
+    noarch: python
+    number: 4
+    script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
     build:
